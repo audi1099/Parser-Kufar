@@ -1,62 +1,38 @@
-Описание проекта
-Этот проект представляет собой телеграм-бота для поиска объявлений о продаже мобильных телефонов на платформе Kufar. Бот позволяет пользователям искать объявления по ключевым словам и получать результаты поиска в виде сообщений в чате, а также сохранять результаты поиска в файл Excel.
+# Telegram Bot for Kufar Ads Search
 
-Установка
-Для работы бота необходимо выполнить следующие шаги:
+This Telegram bot allows users to search for advertisements on Kufar. It retrieves search results based on the specified keyword and sends them to the user.
 
-Установить необходимые библиотеки, запустив команду:
-Copy code
-pip install python-telegram-bot requests beautifulsoup4 openpyxl python-dotenv
-Создать файл .env в корневой директории проекта и добавить в него следующую строку:
-makefile
-Copy code
-TOKEN=<ваш_токен_telegram_бота>
-Замените <ваш_токен_telegram_бота> на токен вашего телеграм-бота, полученного через BotFather.
-Запустить бота, выполнив команду:
-php
-Copy code
-python <имя_файла_с_кодом>.py
-Использование
-После запуска бота вы можете использовать следующие команды:
+## Requirements
+- Python 3.6 or higher
+- Required Python packages:
+  - `requests`
+  - `telebot`
+  - `bs4` (Beautiful Soup)
+  - `openpyxl`
+  - `dotenv`
 
-/start - начать общение с ботом и выбрать модель телефона для поиска.
-Любое текстовое сообщение, кроме команды /start, будет интерпретироваться как ключевое слово для поиска объявлений.
-Описание функций
-start(message)
-Обрабатывает команду /start от пользователя и выводит клавиатуру с доступными моделями телефонов для выбора.
+## Installation
+1. Clone the repository or download the code files.
+2. Install the required Python packages using pip:
+pip install requests telebot beautifulsoup4 openpyxl python-dotenv
+3. Create a `.env` file in the root directory and add your Telegram bot token as follows:
+TOKEN=<Your_Telegram_Bot_Token>
 
-search(message)
-Выполняет поиск объявлений по ключевому слову, полученному от пользователя, на платформе Kufar. Если результаты найдены, отправляет их пользователю в виде сообщений в чате и сохраняет в файл Excel.
+## Usage
+1. Start the bot by executing the Python script:
+python bot.py
+2. Open your Telegram application and find the bot by searching for its name.
+3. Start a conversation with the bot.
+4. Use the `/start` command to initiate the bot and select a phone model from the provided options or enter another model.
+5. Receive search results directly in the Telegram chat.
 
-search_products(keyword)
-Выполняет запрос к сайту Kufar с заданным ключевым словом и возвращает найденные результаты.
+## Functionality
+- `/start` command: Initiates the bot and provides options to select a phone model or enter another model.
+- Search: Retrieves advertisements from Kufar based on the provided keyword.
+- Results: Sends the search results to the user in chunks to avoid message length limits.
+- Error Handling: Provides error messages in case of any issues during the search process or when saving results to Excel.
+- Excel Export: Saves the search results to an Excel file named `<keyword>_results.xlsx` for further analysis.
 
-extract_product_data(product)
-Извлекает данные о продукте (название, цена, местоположение, ссылка) из HTML-элемента на странице.
+## Author
+- Developed by [Your Name]
 
-format_product_data(product_data)
-Форматирует данные о продукте в виде текста для отправки в сообщении.
-
-send_results_in_chunks(results, chat_id)
-Отправляет результаты поиска в чат в виде сообщений, разбивая на части по максимальной длине сообщения Telegram.
-
-save_to_excel(results, keyword, message)
-Сохраняет результаты поиска в файл Excel, предварительно обработав их и форматировав.
-
-strip_tags(html_text)
-Удаляет HTML-теги из текста.
-
-handle_errors(message)
-Обрабатывает ошибки при обработке текстовых сообщений.
-
-handle_other(message)
-Обрабатывает сообщения, не являющиеся текстовыми (например, аудио, фото, стикеры и т. д.).
-
-Зависимости
-python-telegram-bot: Библиотека для работы с Telegram Bot API.
-requests: Библиотека для отправки HTTP-запросов.
-beautifulsoup4: Библиотека для парсинга HTML и XML документов.
-openpyxl: Библиотека для работы с файлами Excel.
-python-dotenv: Библиотека для загрузки переменных окружения из файла .env.
-Лицензия
-Этот проект лицензируется под лицензией MIT. См. файл LICENSE для получения дополнительной информации.
