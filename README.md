@@ -34,5 +34,5 @@ python bot.py
 - Excel Export: Saves the search results to an Excel file named `<keyword>_results.xlsx` for further analysis.
 
 ## Author
-- Developed by [Your Name]
+- Developed by [audi1099]
 
