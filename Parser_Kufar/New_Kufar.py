@@ -1,30 +1,32 @@
+from logging import basicConfig, INFO, error
+import os
+import random
 import re
-from email import message
+import time
 import requests
-from bs4 import BeautifulSoup
 import telebot
+from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from telebot import types
-import time
-import random
-import os
-from dotenv import load_dotenv
 
+# Константы
+CHUNK_LENGTH = 4096  # Максимальная длина сообщения Telegram
+
+# Настройка логирования
+basicConfig(level=INFO)
 
 # Загрузка переменных окружения из файла .env
 load_dotenv()
 
-
 # Получение токена из переменной окружения
 TOKEN = os.getenv("TOKEN")
-
 
 # Инициализация бота с токеном
 bot = telebot.TeleBot(TOKEN)
 
 
-# Функция для обработки команды /start
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
@@ -46,7 +48,6 @@ def start(message):
                           'модель:', reply_markup=markup)
 
 
-# Функция для обработки текстовых сообщений
 @bot.message_handler(func=lambda message: True)
 def search(message):
     keyword = message.text
@@ -56,10 +57,9 @@ def search(message):
         return
     bot.reply_to(message, "Вот результаты поиска:")
     send_results_in_chunks(results, message.chat.id)
-    save_to_excel(results, keyword)
+    save_to_excel(results, keyword, message)
 
 
-# Функция для поиска продуктов на Kufar
 def search_products(keyword):
     url = f"https://www.kufar.by/l/mobilnye-telefony?query={keyword}"
     headers = {
@@ -79,11 +79,10 @@ def search_products(keyword):
                 results += result
         return results
     except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
+        error(f"An error occurred while searching products: {e}")
         return None
 
 
-# Функция для извлечения данных о продукте из HTML-кода
 def extract_product_data(product):
     product_name = product.find('h3', class_='styles_title__F3uIe')
     product_price = product.find('p', class_='styles_price__G3lbO')
@@ -102,40 +101,30 @@ def extract_product_data(product):
         return None
 
 
-# Функция для форматирования данных о продукте
 def format_product_data(product_data):
     return (
         f"Модель: {product_data['name']}\nЦена: {product_data['price']}\nМестоположение: {product_data['location']}\n"
         f"Ссылка на объявление: {product_data['href']}\n\n")
 
 
-# Функция для отправки результатов в Telegram по частям
 def send_results_in_chunks(results, chat_id):
-    CHUNK_LENGTH = 4096  # Максимальная длина сообщения Telegram
-
     chunks = [results[i:i + CHUNK_LENGTH] for i in range(0, len(results), CHUNK_LENGTH)]
     for chunk in chunks:
-        bot.send_message(chat_id, chunk)
+        try:
+            bot.send_message(chat_id, chunk)
+        except Exception as e:
+            error(f"An error occurred while sending results: {e}")
 
 
-# Функция для сохранения результатов в файл Excel
-def save_to_excel(results, keyword):
+def save_to_excel(results, keyword, message):
     try:
         wb = Workbook()
         ws = wb.active
-
-        # Создаем объект шрифта для заголовков столбцов
         bold_font = Font(bold=True)
-
-        # Заголовки столбцов с выделением крупным шрифтом
         headers = ["Модель", "Цена", "Местоположение", "Ссылка на объявление"]
         ws.append(headers)
-
-        # Применяем крупный шрифт к заголовкам столбцов
         for cell in ws[1]:
             cell.font = bold_font
-
-        # Добавляем данные в таблицу
         rows = results.split("\n\n")
         for row in rows:
             if row:
@@ -144,13 +133,10 @@ def save_to_excel(results, keyword):
                 price = strip_tags(data[1].split(":")[1].strip())
                 location = strip_tags(data[2].split(":")[1].strip())
                 link = strip_tags(data[3].split(":")[1].strip())
-
                 ws.append([model, price, location, link])
-
-        # Устанавливаем оптимальную ширину столбцов
         for col in ws.columns:
             max_length = 0
-            column = col[0].column_letter  # Получаем буквенное обозначение столбца
+            column = col[0].column_letter
             for cell in col:
                 try:
                     if len(str(cell.value)) > max_length:
@@ -159,27 +145,23 @@ def save_to_excel(results, keyword):
                     pass
             adjusted_width = (max_length + 2) * 1.2
             ws.column_dimensions[column].width = adjusted_width
-
         filename = f"{keyword}_results.xlsx"
         wb.save(filename)
     except Exception as e:
-        print(f"An error occurred while saving to Excel: {e}")
+        error(f"An error occurred while saving to Excel: {e}")
         bot.reply_to(message, "Произошла ошибка при сохранении результатов. Пожалуйста, попробуйте позже.")
 
 
-# Функция для удаления HTML-тегов с использованием регулярных выражений
 def strip_tags(html_text):
     clean_text = re.sub(r'<[^>]+>', '', html_text)
     return clean_text
 
 
-# Обработка возможных исключений и ошибок в работе бота
 @bot.message_handler(content_types=['text'])
 def handle_errors(message):
     bot.reply_to(message, "Произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже.")
 
 
-# Обработка неопределенных команд
 @bot.message_handler(func=lambda message: True,
                      content_types=['audio', 'document', 'photo', 'sticker', 'video', 'voice', 'location', 'contact',
                                     'new_chat_members', 'left_chat_member', 'new_chat_title', 'new_chat_photo',
@@ -190,5 +172,5 @@ def handle_other(message):
     bot.reply_to(message, "К сожалению, я не могу обработать это.")
 
 
-# Запуск бота
 bot.polling()
+
