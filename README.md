@@ -1,38 +1,39 @@
-# Телеграм-бот для поиска объявлений на Kufar
+# Telegram Bot for Searching Ads on Kufar
 
-Этот телеграм-бот позволяет пользователям искать объявления на Kufar. Он извлекает результаты поиска на основе указанного ключевого слова и отправляет их пользователю.
+This Telegram bot allows users to search for ads on Kufar. It retrieves search results based on a specified keyword and 
+sends them to the user.
 
-## Требования
-- Python 3.6 или выше
-- Необходимые пакеты Python:
+## Requirements
+- Python 3.6 or higher
+- Required Python packages:
   - `requests`
   - `telebot`
   - `bs4` (Beautiful Soup)
   - `openpyxl`
   - `dotenv`
 
-## Установка
-1. Клонируйте репозиторий или загрузите файлы кода.
-2. Установите необходимые пакеты Python с помощью pip:
+## Installation
+1. Clone the repository or download the code files.
+2. Install the required Python packages using pip:
 pip install requests telebot beautifulsoup4 openpyxl python-dotenv
-3. Создайте файл `.env` в корневом каталоге и добавьте в него токен вашего телеграм-бота следующим образом:
-TOKEN=<Ваш_токен_телеграм-бота>
+3. Create a .env file in the root directory and add your Telegram bot token as follows:
+TOKEN=<Your_Telegram_Bot_Token>
 
-## Использование
-1. Запустите бот, выполнив скрипт Python:
+## Usage
+1. Run the bot by executing the Python script:
 python bot.py
-2. Откройте приложение Telegram и найдите бота, введя его имя в поиск.
-3. Начните разговор с ботом.
-4. Используйте команду `/start`, чтобы инициировать бота и выбрать модель телефона из предоставленных вариантов или ввести другую модель.
-5. Получайте результаты поиска прямо в чате Telegram.
+2. Open the Telegram app and search for the bot by entering its name in the search bar.
+3. Start a conversation with the bot.
+4. Use the /start command to initiate the bot and choose a phone model from the provided options or enter another model.
+5. Receive search results directly in the Telegram chat.
 
-## Функциональность
-- Команда `/start`: Инициирует бота и предоставляет варианты выбора модели телефона или ввода другой модели.
-- Поиск: Извлекает объявления с Kufar на основе предоставленного ключевого слова.
-- Результаты: Отправляет результаты поиска пользователю частями, чтобы избежать ограничений на длину сообщения.
-- Обработка ошибок: Предоставляет сообщения об ошибках в случае проблем в процессе поиска или сохранения результатов в Excel.
-- Экспорт в Excel: Сохраняет результаты поиска в файл Excel с именем `<ключевое_слово>_results.xlsx` для дальнейшего анализа.
+## Functionality
+- Command /start: Initiates the bot and provides options to choose a phone model or enter another model.
+- Search: Retrieves ads from Kufar based on the provided keyword.
+- Results: Sends search results to the user in parts to avoid message length limitations.
+- Error Handling: Provides error messages in case of issues during the search or saving results to Excel.
+- Export to Excel: Saves search results in an Excel file named <keyword>_results.xlsx for further analysis.
 
-## Автор
-- Разработано [audi1099]
+## Author
+- Developed by [audi1099]
 
