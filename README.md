@@ -1,4 +1,4 @@
-# Telegram Bot for Searching Ads on Kufar
+# Telegram bot for searching advertisements in Kufar
 
 This Telegram bot allows users to search for ads on Kufar. It retrieves search results based on a specified keyword and 
 sends them to the user.
